@@ -1,0 +1,59 @@
+﻿@page "/todo"
+
+<div class="container">
+    <div class="todo-list">
+        <h1>
+            Todo(@todos.Count(todo => !todo.IsDone))
+            <span>Get things done, one item at a time.</span>
+        </h1>
+        <ul class="todos">
+            @foreach (var todo in todos)
+            {
+                <li class='todos-item @(@todo.IsDone?"done":"")'>
+                    <span>@todo.Title</span>
+                    <div class="action">
+                        <input type="checkbox" @bind="@todo.IsDone" />
+                        <i class="oi oi-delete" @onclick="@((e)=>{DelTodo(todo);})"></i>
+                    </div>
+                </li>
+            }
+        </ul>
+        <p class="emptylist" style='display: @(todos.Count()>0?"none":"");'>Your todo list is empty.</p>
+
+        <form @onsubmit="AddTodo" @onsubmit:preventDefault>
+            <input @bind="newTodo" type="text" placeholder="Something todo" />
+            <button>Add todo</button>
+        </form>
+    </div>
+</div>
+
+@code {
+    private IList<TodoItem> todos;
+    private string newTodo;
+    private int id = 0;
+
+    protected override void OnInitialized()
+    {
+        todos = new List<TodoItem>()
+{
+new TodoItem(++id,"Learn Blazor",false),
+new TodoItem(++id,"Code a todo list",false),
+new TodoItem(++id,"Learn something else",false)
+};
+    }
+
+
+    private void AddTodo()
+    {
+        if (!string.IsNullOrWhiteSpace(newTodo))
+        {
+            todos.Add(new TodoItem { Id = ++id, Title = newTodo });
+            newTodo = string.Empty;
+        }
+    }
+
+    private void DelTodo(TodoItem item)
+    {
+        todos.Remove(item);
+    }
+}
